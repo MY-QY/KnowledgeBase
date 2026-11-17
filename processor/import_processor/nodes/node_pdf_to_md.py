@@ -227,3 +227,16 @@ class NodePDFToMD(BaseNode):
         self.logger.info(f"【MD重命名】重命名成功，文件名：{pdf_stem}.md")
 
         return str(new_md_path.absolute())
+
+if __name__ == "__main__":
+
+    setup_logging()
+
+    init_state = {
+        "pdf_path": r"D:\Projects\Pycharm\knowledge_base\doc\H3C LA2608室内无线网关 用户手册-6W100-整本手册.pdf",
+        "file_dir": r"D:\Projects\Pycharm\knowledge_base\output"
+    }
+    node_pdf_to_md = NodePDFToMD()
+    result = node_pdf_to_md(init_state)
+
+    logging.getLogger().info(json.dumps(result, ensure_ascii=False, indent=4))

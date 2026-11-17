@@ -25,7 +25,6 @@ class NodeEntry(BaseNode):
 
         # 1. 从state中获取文件
         import_file_path = state.get("import_file_path")
-        # import_file_path = state["import_file_path"] #这样写的话字段不存在直接报错
         # 判断路径是否为空
         if not import_file_path:
             raise StateFieldError(field_name='import_file_path', expected_type=str)
@@ -51,45 +50,12 @@ class NodeEntry(BaseNode):
 
         # 5. 返回state
         return state
-# processor/import_processor/nodes/node_pdf_to_md.py
-
-from processor.import_processor.base import BaseNode
-from processor.import_processor.state import ImportGraphState
-
-
-class NodePDFToMD(BaseNode):
-    """
-    PDF 转 Markdown 节点：PDF结构化解析
-    """
-
-    name = "node_pdf_to_md"
-
-    def process(self, state: ImportGraphState):
-
-        return state
-# processor/import_processor/nodes/node_md_img.py
-
-from processor.import_processor.base import BaseNode
-from processor.import_processor.state import ImportGraphState
-
-
-class NodeMDImg(BaseNode):
-    """
-    MarkDown图片处理节点：多模态图片理解
-    """
-
-    name = "node_md_img"
-
-    def process(self, state: ImportGraphState):
-
-
-        return state
 
 
 if __name__ == "__main__":
     setup_logging()
 
-    init_state = {"import_file_path": r"D:\BaiDu\BaiduNetdiskDownload\doc\hak180产品安全手册.pdf"}
+    init_state = {"import_file_path": r"D:\Projects\Pycharm\knowledge_base\doc\hak180产品安全手册.pdf"}
 node_entry = NodeEntry()
 result = node_entry(init_state)
 

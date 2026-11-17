@@ -381,7 +381,7 @@ if __name__ == "__main__":
 
     setup_logging()
 
-    md_path = r"D:\Projects\Pycharm\knowledge_base\output\H3C LA2608室内无线网关 用户手册-6W100-整本手册\chunks.json"
+    md_path = r"D:\Projects\Pycharm\knowledge_base\output\H3C LA2608室内无线网关 用户手册-6W100-整本手册\H3C LA2608室内无线网关 用户手册-6W100-整本手册_chunks.json"
     with open(md_path, "r", encoding="utf-8") as f:
         chunks_json = f.read()
 

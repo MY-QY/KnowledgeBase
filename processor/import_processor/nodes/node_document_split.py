@@ -333,17 +333,13 @@ class NodeDocumentSplit(BaseNode):
 
         try:
             # 拼接备份文件路径：固定文件名，便于查找
-            base_dir = Path(r"D:\Projects\Pycharm\knowledge_base\output")
-            file_title = state.get("file_title")
-            backup_path = base_dir / file_title / "chunks.json"
+            backup_path = Path(state.get("md_path")).parent / f'{state.get("file_title")}_chunks.json'
             # 写入JSON文件：保留中文/格式化缩进，便于人工查看
             with open(backup_path, "w", encoding="utf-8") as f:
 
                 json.dump(
                     sections,
                     f,
-                    #开启 True："title": "\u4e00\u7ea7\u6807\u9898"（乱码，无法直接看）；
-                    #开启 False："title": "一级标题"（正常中文，人工可直接阅读）。
                     ensure_ascii=False,  # 保留中文，不转义为\u编码
                     indent=2             # 格式化缩进，便于阅读
                 )

@@ -107,14 +107,14 @@ if __name__ == "__main__":
 
     setup_logging()
 
-    json_path = r"D:\output\hak180产品安全手册\state.json"
+    json_path = r"D:\Projects\Pycharm\knowledge_base\output\H3C LA2608室内无线网关 用户手册-6W100-整本手册\H3C LA2608室内无线网关 用户手册-6W100-整本手册_item_name_recognition_chunks.json"
     with open(json_path, "r", encoding="utf-8") as f:
         state_json = f.read()
 
-    state = json.loads(state_json)
+    chunks = json.loads(state_json)
 
     init_state = {
-        "chunks": state.get("chunks")
+        "chunks": chunks
     }
 
     # 执行核心处理流程

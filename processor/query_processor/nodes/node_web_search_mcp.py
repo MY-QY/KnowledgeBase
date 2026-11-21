@@ -1,6 +1,12 @@
+import asyncio
+import json
+from agents.mcp import MCPServerStreamableHttp
+
 from processor.query_processor.base import NodeBase
 from processor.query_processor.state import QueryGraphState
 from tool.logger import logger
+from utils.json_format_utils import format_json
+from config.mcp_config import mcp_config
 
 
 class NodeWebSearchMcp(NodeBase):
@@ -12,14 +18,63 @@ class NodeWebSearchMcp(NodeBase):
     name: str = "node_web_search_mcp"
 
     def process(self, state: QueryGraphState) -> QueryGraphState:
-        """
-        节点逻辑
-        :param state: 工作流状态对象
-        :return: 更新后的状态对象
-        """
 
-        # TODO
-        logger.info(f"【{self.name}】节点逻辑")
+        query = state.get("rewritten_query", "")
+        docs = []
+        # 如果没有查询内容，直接返回
+        if query:
+            result = asyncio.run(self._mcp_call(query))
+            if result:
+                pages = json.loads(result.content[0].text).get("pages") or []
+                # 统一输出结构化结果，供后续 rerank/引用使用
+                # 每条：{title, url, snippet}
 
-        # return state
-        return {"web_search_docs": []}
+                for item in pages:
+                    snippet = (item.get("snippet") or "").strip()
+                    url = (item.get("url") or "").strip()
+                    title = (item.get("title") or "").strip()
+                    if not snippet:
+                        continue
+                    docs.append({"title": title, "url": url, "snippet": snippet})
+
+                logger.info("MCP 搜索结果: %s", format_json(docs))
+
+        if docs:
+            return {"web_search_docs": docs}
+        return {}
+
+
+
+    async def _mcp_call(self, query):
+
+        search_mcp = MCPServerStreamableHttp(
+            name="search_mcp",
+            params={
+                "url": mcp_config.mcp_base_url,
+                "headers": {"Authorization": f"Bearer {mcp_config.api_key}"},
+                "timeout": 10,
+            },
+            cache_tools_list=True,
+            max_retry_attempts=3,
+        )
+
+        try:
+            await search_mcp.connect()
+            result = await search_mcp.call_tool(
+                tool_name="bailian_web_search",
+                arguments={"query": query, "count": 5},
+            )
+            return result
+        finally:
+            await search_mcp.cleanup()
+
+if __name__ == "__main__":
+
+    init_state = {
+        "rewritten_query": "关于H3CLA2608-GM/GU室内无线网关，如何配置？"
+    }
+
+    # 执行节点的业务调用
+    node_web_search_mcp = NodeWebSearchMcp()
+    result = node_web_search_mcp(init_state)
+    logger.info(format_json(result, indent=4))

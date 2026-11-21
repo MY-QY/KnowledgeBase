@@ -27,6 +27,7 @@ dependencies = [
     "pymilvus[model]>=3.0.3",
     "modelscope>=1.40.3",
     "openai-agents>=0.25.0",
+    "dashscope>=2.1.1",
 ]
 
 [project.scripts]
